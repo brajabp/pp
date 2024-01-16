@@ -9,9 +9,128 @@
 
 
 /* ************************************************************************************************************************************************************* */
-// HAMBURGER: JavaScript code to handle hamburger menu
+// HAMBURGER: JavaScript code to handle hamburger menu and main menu
+/* *******************************************/
+/*
+    <div data-toggle="collapse" data-target="targetXYZ">
+        Toggle Me for Collapse
+    </div>
+    <div id="targetXYZ">
+        Collapsable Element 1
+    </div>
+*/
+document.addEventListener("DOMContentLoaded", () => {
+    // Large Screen & Small Screen Main Menu
+    handleBlivToggle();
+
+    handleCollapseToggleOnClickActionBlivWay();
+    toggleHamMenuBlivWay();
+});
+
+function handleBlivToggle() {
+    // Find all elements with the attribute "bliv-toggle"
+    const blivToggles = document.querySelectorAll('[bliv-toggle]');
+
+    // Iterate through each bliv-togglr element
+    blivToggles.forEach(sourceElement => {
+        // Get the target element's id from "data-target"
+        const targetId = sourceElement.getAttribute('bliv-target');
+        const targetElement = document.getElementById(targetId);
+
+        // Get the toggle type from "data-toggle"
+        const toggleType = sourceElement.getAttribute('bliv-toggle');
+
+        if (toggleType === 'collapse') {
+//            handleCollapseToggleOnClickActionBlivWay(sourceElement, targetElement);
+        } else if (toggleType === 'dropdown') {
+            handleDropdownToggleOnHoverActionBlivWay(sourceElement, targetElement);
+        }
+    });
+}
+
+function handleCollapseToggleOnClickActionBlivWay() {
+    const menuTab = document.getElementById('menuTab');
+    const toggleButtons = document.querySelectorAll('.toggleButton');
+    const contentDivs = document.querySelectorAll('.contentDiv');
+    let openStates = {};
+
+    toggleButtons.forEach(button => {
+        const targetId = button.getAttribute('data-target');
+        openStates[targetId] = false;
+
+        button.addEventListener('click', () => {
+            openStates[targetId] = !openStates[targetId];
+            Object.keys(openStates).forEach(key => {
+                const div = document.getElementById(key);
+                div.style.maxHeight = openStates[key] ? div.scrollHeight + "px" : "0px";
+            });
+            adjustNavMenuHeight(menuTab, openStates);
+        });
+    });
+}
+
+function toggleHamMenuBlivWay() {
+    const hamburgerElement = document.getElementById('blivHamburger');
+    const menuTab = document.getElementById('menuTab');
+    let isMenuOpen = false;
+
+    hamburgerElement.addEventListener('click', () => {
+        isMenuOpen = !isMenuOpen;
+        hamburgerElement.classList.toggle('menu-open');
+        adjustNavMenuHeight(menuTab, null, isMenuOpen);
+    });
+}
+
+function adjustNavMenuHeight(menuTab, openStates, isMenuOpen = null) {
+    if (isMenuOpen !== null) {
+        menuTab.style.maxHeight = isMenuOpen ? menuTab.scrollHeight + "px" : "0px";
+        return;
+    }
+
+    let totalHeight = 0;
+    for (let key in openStates) {
+        if (openStates[key]) {
+            const div = document.getElementById(key);
+            totalHeight += div.scrollHeight;
+        }
+    }
+    if (totalHeight > 0) {
+        menuTab.style.maxHeight = menuTab.scrollHeight + totalHeight + "px";
+    }
+}
+
+function handleDropdownToggleOnHoverActionBlivWay(sourceElement, targetElement) {
+    const arrow = sourceElement.querySelector('.arrow');
+
+    sourceElement.addEventListener("mouseenter", () => openDropdownBlivWay(targetElement, arrow));
+
+    // Set up mouseleave event for both the sourceElement and the targetElement
+    sourceElement.addEventListener("mouseleave", () => closeDropdownBlivWay(sourceElement, targetElement, arrow));
+    targetElement.addEventListener("mouseleave", () => closeDropdownBlivWay(sourceElement, targetElement, arrow));
+}
+
+function openDropdownBlivWay(targetElement, arrow) {
+    targetElement.style.display = "block";
+    arrow.classList.add("-rotate-180");
+}
+
+function closeDropdownBlivWay(sourceElement, targetElement, arrow) {
+    // Delay the closing to check if the mouse has really left both elements
+    setTimeout(() => {
+        if (!sourceElement.matches(':hover') && !targetElement.matches(':hover')) {
+            targetElement.style.display = "none";
+            arrow.classList.remove("-rotate-180");
+        }
+    }, 100); // Adjust timeout as needed
+}
+
+/* *******************************************/
+/* *******************************************/
+/* *******************************************/
+/* *******************************************/
 /* *******************************************/
 // Get the elements
+/**********************************************************************************************
 const hamburgerBtn = document.getElementById('hamburger');
 const content = document.getElementById('content');
 
@@ -36,6 +155,7 @@ hamburgerBtn.addEventListener('click', () => {
     }
     isMenuOpen = !isMenuOpen;
 });
+**********************************************************************************************/
 /* ************************************************************************************************************************************************************* */
 
 
@@ -224,12 +344,12 @@ if (open) {
 
 
 const buttons = document.querySelectorAll('.popover-button');
-
+    
 buttons.forEach(function(button) {
     button.addEventListener('click', function() {
         const target = button.dataset.target;
         const div = document.getElementById(target);
-
+        
         if (div.style.display === 'none') {
             div.style.display = 'block';
         } else {
@@ -246,23 +366,23 @@ buttons.forEach(function(button) {
 
 
 // document.addEventListener('alpine:init', () => {
-//    Alpine.store('accordion', {
-//      tab: 0,
-//    });
-//    Alpine.data('accordion', (idx) => ({
-//      init() {
-//       this.idx = idx;
-//      },
-//      idx: -1,
-//      handleClick() {
-//       // alert("handleClick: " + this.idx + " ---> Tab: " + this.$store.accordion.tab);
-//       this.$store.accordion.tab = this.$store.accordion.tab === this.idx ? 0 : this.idx;
-//      },
-//      handleToggle() {
-//       // alert("handleToggle: " + this.idx + " ---> Tab: " + this.$store.accordion.tab + " ----> Height: " + this.$refs.tab.scrollHeight);
-//       return this.$store.accordion.tab === this.idx ? `max-height: ${this.$refs.tab.scrollHeight}px` : '';
-//      }
-//    }));
+// 	Alpine.store('accordion', {
+// 	  tab: 0,
+// 	});
+// 	Alpine.data('accordion', (idx) => ({
+// 	  init() {
+// 		this.idx = idx;
+// 	  },
+// 	  idx: -1,
+// 	  handleClick() {
+// 		// alert("handleClick: " + this.idx + " ---> Tab: " + this.$store.accordion.tab);
+// 		this.$store.accordion.tab = this.$store.accordion.tab === this.idx ? 0 : this.idx;
+// 	  },
+// 	  handleToggle() {
+// 		// alert("handleToggle: " + this.idx + " ---> Tab: " + this.$store.accordion.tab + " ----> Height: " + this.$refs.tab.scrollHeight);
+// 		return this.$store.accordion.tab === this.idx ? `max-height: ${this.$refs.tab.scrollHeight}px` : '';
+// 	  }
+// 	}));
 //   })
 
 
@@ -288,12 +408,12 @@ buttons.forEach(function(button) {
 
 <script>
     const buttons = document.querySelectorAll('.popover-button');
-
+    
     buttons.forEach(function(button) {
         button.addEventListener('click', function() {
             const target = button.dataset.target;
             const div = document.getElementById(target);
-
+            
             if (div.style.display === 'none') {
                 div.style.display = 'block';
             } else {
